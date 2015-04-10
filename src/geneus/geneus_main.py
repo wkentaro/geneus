@@ -72,9 +72,9 @@ def package_depends_impl(pkg, depends=[]):
         return depends
 
     tmp_depends = [x for x in rp.get_depends(pkg, False) if x not in depends]
-    depends.extend(tmp_depends)
+    depends = tmp_depends + depends
     for p in tmp_depends:
-        package_depends_impl(p, depends)
+        depends = package_depends_impl(p, depends)
 
     return depends
 
@@ -105,7 +105,7 @@ def genmain(argv, progname):
             pkg = args[1]               # ARG_PKG
             pkg_dependences = package_depends(pkg) + args[2:]   # args[1] ARG_PKG
             # load all dependences and then load target package
-            for p in list(set(pkg_dependences)):
+            for p in pkg_dependences:
                 f.write("(ros::load-ros-package \"%s\")\n"%p)
             f.write("(ros::load-ros-package \"%s\")\n"%pkg)
             f.close()
